@@ -1,4 +1,7 @@
 class Tower
+	
+	@victory = false
+
 	def initialize(height)
 		@tower_height = height
 	end
@@ -37,13 +40,20 @@ class Tower
 	#convert user input
 	def convert_input(move)
 		move = move.gsub(/\W/, '').split('').map! {|e| e.to_i}
-		move[0] = move[0] - 1
-		move[1] = move[1] - 1
+		move = move.map do |rod|
+			if rod > 1
+				rod - 1
+			elsif rod == 1
+				rod = 0		
+			end
+		end
 	end
 
 	#check for illegal move
 	def valid_move?(move_array)
-		if @gameboard[move_array[0]].empty?
+		if @gameboard[move_array[0]] == @gameboard[move_array[1]]
+			return false
+		elsif @gameboard[move_array[0]].empty?
 			return false
 		elsif @gameboard[move_array[1]].empty?
 			return true
@@ -54,28 +64,57 @@ class Tower
 		end
 	end
 
+	#check for victory
+	def victory_check
+		@gameboard.each_with_index do |rod_contents, rod|
+			if rod_contents.length == @tower_height && rod != 0
+				puts "You Win"
+				return @victory = true
+			end
+		end
+	end
+
 	#Ask user to move
 	def user_move
 		puts "Where would you like to move?"
 		loop do
-			print ">"
+			print "> "
 			@move = gets.chomp
-			break if valid_input?(@move)
+			if @move.downcase == "quit"
+				exit
+			elsif valid_input?(@move)
+				@move = convert_input(@move)
+				if valid_move?(@move)
+					break
+				else
+					puts "Try again, that is not a valid move."
+				end
+			else
 			puts "Try again, your input should look like this: [1,3]"
-		end
-		loop do 
-			@move = convert_input(@move)
-			break if valid_move?(@move)
-			puts "Try again, that is not a valid move."
-			print ">"
-			@move = gets.chomp
+			end	
 		end
 		puts "Great, I'll move a disk from rod #{@move[0] + 1} to rod #{@move[1] + 1}"
 	end
 
-	#check for victory
-
 	#Re-arrange board
+	def arrange_board
+		ring = @gameboard[@move[0]].pop
+		@gameboard[@move[1]] << ring
+		p @gameboard
+	end
+
+	def play
+		introduction
+		create_gameboard
+		until @victory
+			user_move
+			arrange_board
+			#render
+			victory_check
+		end
+	end
+
+	
 
 	#display
 
@@ -83,6 +122,4 @@ class Tower
 end
 
 game = Tower.new(3)
-game.introduction
-game.create_gameboard
-game.user_move
+game.play
