@@ -23,11 +23,6 @@ class Tower
 		puts "in the format [1,3]. Enter q to quit."
 	end
 
-	#Display board
-	def render
-
-	end
-
 	#check for invalid input
 	def valid_input?(move)
 		 if move.match(/^\[\d\,\d\]$/) != nil 
@@ -103,7 +98,6 @@ class Tower
 	def arrange_board
 		ring = @gameboard[@move[0]].pop
 		@gameboard[@move[1]] << ring
-		#p @gameboard
 	end
 
 	#display board
@@ -116,9 +110,9 @@ class Tower
 			puts (rod + 1).to_s.center(@tower_height)
 			puts ""
 		end
-		#p printable_gameboard
 	end
 
+	#play ball!
 	def play
 		introduction
 		create_gameboard
@@ -131,12 +125,7 @@ class Tower
 		end
 	end
 
-	
-
-	
-
-	#if quit is type leave game
 end
 
-game = Tower.new(3)
+game = Tower.new(5)
 game.play
