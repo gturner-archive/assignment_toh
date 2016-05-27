@@ -37,6 +37,21 @@ class Tower
 	#convert user input
 	def convert_input(move)
 		move = move.gsub(/\W/, '').split('').map! {|e| e.to_i}
+		move[0] = move[0] - 1
+		move[1] = move[1] - 1
+	end
+
+	#check for illegal move
+	def valid_move?(move_array)
+		if @gameboard[move_array[0]].empty?
+			return false
+		elsif @gameboard[move_array[1]].empty?
+			return true
+		elsif @gameboard[move_array[1]].empty? == false
+			@gameboard[move_array[0]].last.length < move_array[move_array[1]].last.length
+		else
+			return false
+		end
 	end
 
 	#Ask user to move
@@ -46,20 +61,24 @@ class Tower
 			print ">"
 			@move = gets.chomp
 			break if valid_input?(@move)
+			puts "Try again, your input should look like this: [1,3]"
 		end
-		move = convert_input(@move)
-		puts "Great, I'll move a disk from rod #{move[0]} to rod #{move[1]}"
+		loop do 
+			@move = convert_input(@move)
+			break if valid_move?(@move)
+			puts "Try again, that is not a valid move."
+			print ">"
+			@move = gets.chomp
+		end
+		puts "Great, I'll move a disk from rod #{@move[0] + 1} to rod #{@move[1] + 1}"
 	end
-
-
-	#check for illegal move
 
 	#check for victory
 
 	#Re-arrange board
+
 	#display
-	#if full tower on new peg user wins
-	#only let user make legal moves
+
 	#if quit is type leave game
 end
 
