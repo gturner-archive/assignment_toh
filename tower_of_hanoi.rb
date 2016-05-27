@@ -30,7 +30,7 @@ class Tower
 
 	#check for invalid input
 	def valid_input?(move)
-		 if move.match(/^\[[1-3]\,[1-3]\]$/) != nil
+		 if move.match(/^\[\d\,\d\]$/) != nil 
 		 	return true
 		 else
 		 	return false
@@ -53,12 +53,14 @@ class Tower
 	def valid_move?(move_array)
 		if @gameboard[move_array[0]] == @gameboard[move_array[1]]
 			return false
+		elsif move_array[0] > (@tower_height - 1) || move_array[1] > (@tower_height - 1)
+			return false
 		elsif @gameboard[move_array[0]].empty?
 			return false
 		elsif @gameboard[move_array[1]].empty?
 			return true
 		elsif @gameboard[move_array[1]].empty? == false
-			@gameboard[move_array[0]].last.length < move_array[move_array[1]].last.length
+			@gameboard[move_array[0]].last.length < @gameboard[move_array[1]].last.length
 		else
 			return false
 		end
@@ -68,7 +70,8 @@ class Tower
 	def victory_check
 		@gameboard.each_with_index do |rod_contents, rod|
 			if rod_contents.length == @tower_height && rod != 0
-				puts "You Win"
+				puts "*****Congratulations!*****"
+				puts "*****You Win!*****"
 				return @victory = true
 			end
 		end
@@ -80,7 +83,7 @@ class Tower
 		loop do
 			print "> "
 			@move = gets.chomp
-			if @move.downcase == "quit"
+			if @move.downcase == "quit" or @move.downcase == "q"
 				exit
 			elsif valid_input?(@move)
 				@move = convert_input(@move)
@@ -100,23 +103,37 @@ class Tower
 	def arrange_board
 		ring = @gameboard[@move[0]].pop
 		@gameboard[@move[1]] << ring
-		p @gameboard
+		#p @gameboard
+	end
+
+	#display board
+	def render
+		printable_gameboard = @gameboard.each_with_index do |rod_contents, rod|
+			puts ""
+			rod_contents.reverse.each do |discs|
+				puts discs.ljust(@tower_height)
+			end
+			puts (rod + 1).to_s.center(@tower_height)
+			puts ""
+		end
+		#p printable_gameboard
 	end
 
 	def play
 		introduction
 		create_gameboard
+		render
 		until @victory
 			user_move
 			arrange_board
-			#render
+			render
 			victory_check
 		end
 	end
 
 	
 
-	#display
+	
 
 	#if quit is type leave game
 end
